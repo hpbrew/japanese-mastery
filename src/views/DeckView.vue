@@ -17,11 +17,17 @@ const decks: Record<string, { name: string; cards: Array<{ front: string; back: 
 
 const deck = computed(() => decks[deckId.value] || { name: deckId.value, cards: [] });
 const index = ref(0);
-const flipped = ref(false);
+const showFrontFirst = ref(true);
+const flipped = ref(!showFrontFirst.value);
 
 watch(deckId, () => {
   index.value = 0;
-  flipped.value = false;
+  flipped.value = !showFrontFirst.value;
+});
+
+watch(showFrontFirst, () => {
+  // when the viewing preference changes, reset current card side
+  flipped.value = !showFrontFirst.value;
 });
 
 function next() {
@@ -30,7 +36,7 @@ function next() {
   } else {
     index.value = 0;
   }
-  flipped.value = false;
+  flipped.value = !showFrontFirst.value;
 }
 
 function prev() {
@@ -39,7 +45,7 @@ function prev() {
   } else {
     index.value = Math.max(0, deck.value.cards.length - 1);
   }
-  flipped.value = false;
+  flipped.value = !showFrontFirst.value;
 }
 
 function flip() {
@@ -68,6 +74,10 @@ const current = computed(() => deck.value.cards[index.value] || { front: "", bac
     </div>
 
     <div class="controls">
+      <label class="toggle">
+        <input type="checkbox" v-model="showFrontFirst" />
+        <span>Show front first</span>
+      </label>
       <button @click="prev">Prev</button>
       <span>{{ index + 1 }} / {{ deck.cards.length }}</span>
       <button @click="next">Next</button>
@@ -110,6 +120,15 @@ const current = computed(() => deck.value.cards[index.value] || { front: "", bac
   justify-content: center;
   gap: 1rem;
   align-items: center;
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
 }
 .face {
   padding: 1rem;

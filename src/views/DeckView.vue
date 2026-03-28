@@ -49,7 +49,21 @@ function prev() {
 }
 
 function flip() {
-  flipped.value = !flipped.value;
+  // If front is showing, flip to reveal the back.
+  // If back is showing, advance to the next card instead of flipping back.
+  if (!flipped.value) {
+    flipped.value = true;
+    return;
+  }
+
+  // Back is showing — go to next card
+  if (index.value < deck.value.cards.length - 1) {
+    index.value++;
+  } else {
+    index.value = 0;
+  }
+  // reset side for the next card according to preference
+  flipped.value = !showFrontFirst.value;
 }
 
 function goBack() {

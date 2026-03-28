@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
+import DeckSelect from "./components/DeckSelect.vue";
 </script>
 
 <template>
@@ -14,11 +14,14 @@ import HelloWorld from "./components/HelloWorld.vue";
     />
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <DeckSelect msg="You did it!" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/deck/hiragana">Hiragana Deck</RouterLink>
+        <RouterLink to="/deck/katakana">Katakana Deck</RouterLink>
+        <RouterLink to="/deck/jlpt-n5">JLPT N5 Deck</RouterLink>
       </nav>
     </div>
   </header>

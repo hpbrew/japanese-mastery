@@ -5,14 +5,14 @@ import DeckSelect from "./components/DeckSelect.vue";
 
 <template>
   <div class="app-root">
-    <header class="app-header">
+    <!-- <header class="app-header">
       <div class="wrapper">
         <nav class="main-nav">
           <RouterLink to="/">Decks</RouterLink>
           <RouterLink to="/about">About</RouterLink>
         </nav>
       </div>
-    </header>
+    </header> -->
 
     <main class="app-main">
       <RouterView />

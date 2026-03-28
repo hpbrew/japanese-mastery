@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { decks } from "@/assets/decks/deck";
 const router = useRouter();
-
-const decks = [
-  { id: "hiragana", name: "Hiragana" },
-  { id: "katakana", name: "Katakana" },
-  { id: "jlpt-n5", name: "JLPT N5 - Basics" },
-];
 
 function open(deckId: string) {
   router.push({ name: "deck", params: { id: deckId } });

@@ -1,35 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { ref, computed, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { hiraganaDeck } from "../assets/decks/hiragana";
+import { jlptN5Deck } from "@/assets/decks/jlptn5";
+import { katakanaDeck } from "@/assets/decks/katakana";
 
 const route = useRoute();
 const router = useRouter();
 const deckId = computed(() => (route.params.id as string) || "unknown");
 
 const decks: Record<string, { name: string; cards: Array<{ front: string; back: string }> }> = {
-  hiragana: {
-    name: "Hiragana",
-    cards: [
-      { front: "あ", back: "a" },
-      { front: "い", back: "i" },
-      { front: "う", back: "u" },
-    ],
-  },
-  katakana: {
-    name: "Katakana",
-    cards: [
-      { front: "ア", back: "a" },
-      { front: "イ", back: "i" },
-      { front: "ウ", back: "u" },
-    ],
-  },
-  "jlpt-n5": {
-    name: "JLPT N5 - Basics",
-    cards: [
-      { front: "犬", back: "dog (いぬ)" },
-      { front: "猫", back: "cat (ねこ)" },
-    ],
-  },
+  hiragana: hiraganaDeck,
+  katakana: katakanaDeck,
+  "jlpt-n5": jlptN5Deck,
 };
 
 const deck = computed(() => decks[deckId.value] || { name: deckId.value, cards: [] });

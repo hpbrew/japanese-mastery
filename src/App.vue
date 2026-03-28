@@ -4,35 +4,39 @@ import DeckSelect from "./components/DeckSelect.vue";
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
+  <div class="app-root">
+    <header class="app-header">
+      <div class="wrapper">
+        <nav class="main-nav">
+          <RouterLink to="/">Decks</RouterLink>
+          <RouterLink to="/about">About</RouterLink>
+        </nav>
+      </div>
+    </header>
 
-    <div class="wrapper">
-      <DeckSelect msg="You did it!" />
+    <main class="app-main">
+      <RouterView />
+    </main>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/deck/hiragana">Hiragana Deck</RouterLink>
-        <RouterLink to="/deck/katakana">Katakana Deck</RouterLink>
-        <RouterLink to="/deck/jlpt-n5">JLPT N5 Deck</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+    <!-- <footer class="app-footer">
+      <DeckSelect />
+    </footer> -->
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .logo {
@@ -40,11 +44,11 @@ header {
   margin: 0 auto 2rem;
 }
 
-nav {
+.main-nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
-  margin-top: 2rem;
+  padding: 0.75rem 0;
 }
 
 nav a.router-link-exact-active {
@@ -90,5 +94,16 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+}
+
+.app-main {
+  flex: 1 1 auto;
+  padding: 1.25rem;
+}
+
+.app-footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0.75rem 1rem;
 }
 </style>

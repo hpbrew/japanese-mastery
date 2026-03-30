@@ -1,21 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { hiraganaDeck } from "../assets/decks/hiragana";
-import { jlptN5Deck } from "@/assets/decks/jlptn5";
-import { katakanaDeck } from "@/assets/decks/katakana";
+import { decks } from "@/assets/decks/deck";
 
 const route = useRoute();
 const router = useRouter();
 const deckId = computed(() => (route.params.id as string) || "unknown");
 
-const decks: Record<string, { name: string; cards: Array<{ front: string; back: string }> }> = {
-  hiragana: hiraganaDeck,
-  katakana: katakanaDeck,
-  "jlpt-n5": jlptN5Deck,
-};
-
-const deck = computed(() => decks[deckId.value] || { name: deckId.value, cards: [] });
+const deck = computed(() => decks.find((deck)=>deckId.value === deck.id) || { name: deckId.value, cards: [] });
 const index = ref(0);
 const showFrontFirst = ref(true);
 const flipped = ref(!showFrontFirst.value);

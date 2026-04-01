@@ -2,6 +2,9 @@
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { decks } from "@/assets/decks/deck";
+import DeckHeader from "@/components/deck/DeckHeader.vue";
+import DeckCard from "@/components/deck/DeckCard.vue";
+import DeckControls from "@/components/deck/DeckControls.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -58,69 +61,29 @@ function flip() {
   flipped.value = !showFrontFirst.value;
 }
 
-function goBack() {
-  router.push({ name: "home" });
-}
+
 
 const current = computed(() => deck.value.cards[index.value] || { front: "", back: "" });
 </script>
 
 <template>
   <div class="deck-view">
-    <header class="deck-header">
-      <button class="back" @click="goBack">← Back</button>
-      <h2>{{ deck.name }}</h2>
-    </header>
+    <DeckHeader :id="deckId" :name="deck.name" />
 
-    <div class="card-area">
-      <div class="card" @click="flip">
-        <div class="face front" v-if="!flipped">{{ current.front }}</div>
-        <div class="face back" v-else>{{ current.back }}</div>
-      </div>
-    </div>
+    <DeckCard :current="current" :flipped="flipped" @flip="flip" />
 
-    <div class="controls">
-      <label class="toggle">
-        <input type="checkbox" v-model="showFrontFirst" />
-        <span>Show front first</span>
-      </label>
-      <button @click="prev">Prev</button>
-      <span>{{ index + 1 }} / {{ deck.cards.length }}</span>
-      <button @click="next">Next</button>
-    </div>
+    <DeckControls
+      :currentArrayIndex="index"
+      :deckLength="deck.cards.length"
+      @prev="prev"
+      @flip="flip"
+      @next="next"
+    />
   </div>
 </template>
 
 <style scoped>
-.deck-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.back {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-}
-.card-area {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-}
-.card {
-  width: 320px;
-  height: 200px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-  cursor: pointer;
-  user-select: none;
-  background: var(--color-surface);
-}
+
 .controls {
   display: flex;
   justify-content: center;
@@ -136,7 +99,5 @@ const current = computed(() => deck.value.cards[index.value] || { front: "", bac
   width: 16px;
   height: 16px;
 }
-.face {
-  padding: 1rem;
-}
+
 </style>

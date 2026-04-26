@@ -14,11 +14,16 @@ function goBack() {
   router.push({ name: "home" });
 }
 
+function viewAll() {
+  router.push({ name: "deck-all-cards", params: { id: id.value } });
+}
 </script>
 <template>
   <header class="deck-header">
     <button class="back" @click="goBack">← Back</button>
     <h1>{{ name }}</h1>
+    <button class="back" @click="viewAll">View All</button>
+
   </header>
 </template>
 

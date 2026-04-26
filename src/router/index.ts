@@ -23,6 +23,12 @@ const router = createRouter({
       component: () => import("../views/DeckView.vue"),
       props: true,
     },
+    {
+      path: "/deck/:id/all",
+      name: "deck-all-cards",
+      component: () => import("../views/DeckViewAllCards.vue"),
+      props: true,
+    }
   ],
 });
 

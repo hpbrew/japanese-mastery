@@ -18,15 +18,36 @@ export function levenshteinDistance(a: string, b: string) {
   for (let i = 1; i <= a.length; i += 1) {
     for (let j = 1; j <= b.length; j += 1) {
       const substitutionCost = a[i - 1] === b[j - 1] ? 0 : 1;
-      matrix[i][j] = Math.min(
-        matrix[i - 1][j] + 1,
-        matrix[i][j - 1] + 1,
-        matrix[i - 1][j - 1] + substitutionCost,
+
+      const mI = matrix[i];
+      if (!mI) continue
+
+      const mIMinus1 = matrix[i - 1];
+      if (!mIMinus1) continue
+
+      const mIMinus1J = mIMinus1[j];
+      if (!mIMinus1J) continue
+
+      const mIJK = mI[j - 1];
+      if (!mIJK) continue
+
+      const mIMinus1JJ = mIMinus1[j - 1];
+      if (!mIMinus1JJ) continue
+
+      mI[j] = Math.min(
+        mIMinus1J + 1,
+        mIJK + 1,
+        mIMinus1JJ + substitutionCost,
       );
     }
   }
 
-  return matrix[a.length][b.length];
+  const mA = matrix[a.length];
+  if (!mA) return 0
+
+  if ((!mA[b.length])) return 0
+
+  return mA[b.length]
 }
 
 export function similarityScore(a: string, b: string) {

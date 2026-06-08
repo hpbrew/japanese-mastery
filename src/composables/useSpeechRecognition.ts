@@ -1,86 +1,115 @@
-import { ref, onBeforeUnmount } from 'vue';
+import { ref, onBeforeUnmount } from "vue"
 
-type SpeechResultCallback = (transcript: string, isFinal: boolean, confidence: number) => void;
+type SpeechResultCallback = (
+  transcript: string,
+  isFinal: boolean,
+  confidence: number,
+) => void
+
+interface SpeechRecognitionOptions {
+  lang?: string
+  continuous?: boolean
+  interimResults?: boolean
+}
 
 export function useSpeechRecognition({
-  lang = 'ja-JP',
+  lang = "ja-JP",
   continuous = true,
   interimResults = false,
-} = {}) {
-  const supported = typeof (window as any).webkitSpeechRecognition !== 'undefined' || typeof (window as any).SpeechRecognition !== 'undefined';
-  const recognizing = ref(false);
-  const lastTranscript = ref('');
-  let recognizer: any = null;
+}: SpeechRecognitionOptions = {}) {
+  const SpeechRecognition =
+    (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+  const supported = typeof SpeechRecognition !== "undefined"
 
-  const createRecognizer = () => {
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    if (!SpeechRecognition) return null;
-    const instance = new SpeechRecognition();
-    instance.lang = lang;
-    instance.continuous = continuous;
-    instance.interimResults = interimResults;
-    instance.maxAlternatives = 1;
-    return instance;
-  };
+  const recognizing = ref(false)
+  const lastTranscript = ref("")
+  let recognizer: any = null
+  let callback: SpeechResultCallback | null = null
 
-  const stop = () => {
-    if (recognizer) {
-      try {
-        recognizer.stop();
-      } catch {
-        // ignore stop errors from browser
-      }
-    }
-    recognizing.value = false;
-  };
+  // 1. Initialize the recognizer once and bind persistent event listeners
+  const initRecognizer = () => {
+    if (!supported || recognizer) return
 
-  const start = (onResult: SpeechResultCallback) => {
-    if (!supported) {
-      return Promise.reject(new Error('SpeechRecognition is not supported by this browser.'));
-    }
-
-    if (!recognizer) {
-      recognizer = createRecognizer();
-    }
-
-    if (!recognizer) {
-      return Promise.reject(new Error('Could not create SpeechRecognition instance.'));
-    }
+    recognizer = new SpeechRecognition()
+    recognizer.lang = lang
+    recognizer.continuous = continuous
+    recognizer.interimResults = interimResults
+    recognizer.maxAlternatives = 1
 
     recognizer.onstart = () => {
-      recognizing.value = true;
-    };
+      recognizing.value = true
+    }
 
     recognizer.onend = () => {
-      recognizing.value = false;
-    };
+      recognizing.value = false
+    }
 
     recognizer.onerror = (event: any) => {
-      console.warn('SpeechRecognition error', event);
-    };
+      // Handle 'not-allowed' (permission denied) or 'no-speech' gracefully
+      console.warn("SpeechRecognition error:", event.error, event.message)
+      recognizing.value = false
+    }
 
     recognizer.onresult = (event: any) => {
+      if (!callback) return
+
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        const transcript = result[0].transcript.trim();
-        const confidence = result[0].confidence || 0;
-        const isFinal = result.isFinal;
-        lastTranscript.value = transcript;
-        onResult(transcript, isFinal, confidence);
-      }
-    };
+        const result = event.results[i]
+        const transcript = result[0].transcript.trim()
+        const confidence = result[0].confidence || 0
+        const isFinal = result.isFinal
 
-    return new Promise<void>((resolve, reject) => {
+        lastTranscript.value = transcript
+        callback(transcript, isFinal, confidence)
+      }
+    }
+  }
+
+  const start = (onResult: SpeechResultCallback): Promise<void> => {
+    if (!supported) {
+      return Promise.reject(
+        new Error("SpeechRecognition is not supported by this browser."),
+      )
+    }
+
+    if (!recognizer) {
+      initRecognizer()
+    }
+
+    // Update the active callback function safely
+    callback = onResult
+
+    // Prevent crashing if start() is called while already running
+    if (recognizing.value) {
+      return Promise.resolve()
+    }
+
+    return new Promise((resolve, reject) => {
       try {
-        recognizer.start();
-        resolve();
+        recognizer.start()
+        resolve()
       } catch (error) {
-        reject(error);
+        reject(error)
       }
-    });
-  };
+    })
+  }
 
-  onBeforeUnmount(stop);
+  const stop = () => {
+    if (recognizer && recognizing.value) {
+      try {
+        recognizer.stop()
+      } catch {
+        // Ignore native stop conflicts
+      }
+    }
+    recognizing.value = false
+  }
+
+  onBeforeUnmount(() => {
+    stop()
+    recognizer = null
+    callback = null
+  })
 
   return {
     supported,
@@ -88,5 +117,5 @@ export function useSpeechRecognition({
     lastTranscript,
     start,
     stop,
-  };
+  }
 }

@@ -20,7 +20,7 @@ const transcript = ref('');
 const speechError = ref('');
 const speechThreshold = 0.75;
 
-const { supported: speechSupported, recognizing, lastTranscript, start, stop } = useSpeechRecognition({
+const { supported: speechSupported, recognizing, /*lastTranscript,*/ start, stop } = useSpeechRecognition({
   lang: 'ja-JP',
   continuous: true,
   interimResults: false,
@@ -105,8 +105,8 @@ async function toggleSpeechRecognition() {
 
   try {
     await start(handleSpeechResult);
-  } catch (error: any) {
-    speechError.value = error?.message || 'Unable to start speech recognition.';
+  } catch (error: unknown) {
+    speechError.value = (error as Error)?.message || 'Unable to start speech recognition.';
   }
 }
 

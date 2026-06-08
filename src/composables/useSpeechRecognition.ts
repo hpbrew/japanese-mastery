@@ -60,6 +60,7 @@ export function useSpeechRecognition({
         const isFinal = result.isFinal
 
         lastTranscript.value = transcript
+        console.log("Recognized:", { transcript, confidence, isFinal })
         callback(transcript, isFinal, confidence)
       }
     }
